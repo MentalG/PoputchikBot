@@ -1,10 +1,12 @@
-const CheckBot = require('./checkbot')
+require('dotenv/config')
 
-const bot = new CheckBot('1008383811:AAHJK82XBr8yhPGr9AHaJqAymMi_f9bxll8')
+const CheckBot = require('./checkbot')
+const bot = new CheckBot(process.env.API_KEY)
 
 bot.use(async (ctx, next) => {
     const start = new Date()
     await next()
+    console.log('Yess boosss');
     bot.startLog()
     const ms = new Date() - start
     // console.log('Response time: %sms', ms)
