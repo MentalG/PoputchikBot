@@ -1,16 +1,50 @@
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage');
+const session = require('telegraf/session')
 const Markup = require('telegraf/markup');
+const Composer = require('telegraf/composer');
+const WizardScene = require('telegraf/scenes/wizard');
+const { leave } = Stage
 
-const {loginWizard} = require('./src/wizards/login')
-const {registration} = require('./src/wizards/registration')
+const { loginWizard } = require('./src/wizards/login')
+const { registrationWizard } = require('./src/wizards/registration')
 
 module.exports = class CheckBot extends Telegraf {
-    constructor() {
+    constructor () {
         super(...arguments)
     }
 
-    startLog() {
-        console.log('yo')
+    mount () {
+        const test = new WizardScene('test-scene', {},
+            new Composer(
+                (ctx) => {
+                    ctx.replyWithMarkdown('ID?', Markup.inlineKeyboard([
+                        Markup.callbackButton('Yes', 'login'),
+                        Markup.callbackButton('No', 'registration')
+                    ]).extra());
+                    return ctx.wizard.next();
+                }
+            ),
+            new Composer(
+                Composer.action('login', (ctx) => {
+                    ctx.wizard.state.type = 'login';
+                    ctx.scene.enter('login-wizard')
+                }),
+                Composer.action('registration', (ctx) => {
+                    ctx.wizard.state.type = 'registration';
+                    ctx.scene.enter('registration-wizard')
+                }),
+                () => 0,
+            )
+        )
+
+
+
+        const stage = new Stage([test, loginWizard, registrationWizard])
+        stage.command('cancel', leave())
+
+        this.use(session())
+        this.use(stage.middleware())
+        this.command('start', (ctx) => ctx.scene.enter('test-scene'))
     }
 }
