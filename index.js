@@ -1,6 +1,7 @@
 require('dotenv/config')
 
 const CheckBot = require('./checkbot')
+
 const bot = new CheckBot(process.env.API_KEY)
 
 bot.use(async (ctx, next) => {

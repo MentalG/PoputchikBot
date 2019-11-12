@@ -34,7 +34,6 @@ module.exports = class CheckBot extends Telegraf {
                     ctx.wizard.state.type = 'registration';
                     ctx.scene.enter('registration-wizard')
                 }),
-                () => 0,
             )
         )
 
