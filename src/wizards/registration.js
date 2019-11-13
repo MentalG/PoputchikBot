@@ -35,7 +35,13 @@ module.exports.registrationWizard = new WizardScene('registration-wizard', {},
             Markup.inlineKeyboard([
                 Markup.callbackButton('Подтвердить', 'set-car-image'),
             ]).extra());
-            ctx.scene.enter('test-scene')
+            ctx.wizard.next()
         }),
-    ),
+        ),
+        
+        new Composer(
+            Composer.action('set-car-image', (ctx) => {
+                ctx.scene.enter('test-scene')
+        })
+    )
 )
