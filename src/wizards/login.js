@@ -10,7 +10,7 @@ module.exports.loginWizard = new WizardScene('login-wizard', {},
                     Markup.callbackButton('Водитель', 'driver-login'),
                     Markup.callbackButton('Пассажир', 'passenger-login')
                 ]).extra());
-            return ctx.wizard.next();
+                ctx.wizard.next()
         }
     ),
 
@@ -18,13 +18,44 @@ module.exports.loginWizard = new WizardScene('login-wizard', {},
         Composer.action('driver-login', (ctx) => {
             ctx.replyWithMarkdown('Меню',
                 Markup.inlineKeyboard([
-                    Markup.callbackButton('Назначить поездку', 'set-drive'),
+                    Markup.callbackButton('Назначить поездку', 'set-ride'),
                     Markup.callbackButton('Изменить изображение автомобиля', 'change-car-image'),
                     Markup.callbackButton('Изменить модель', 'change-car-model'),
                 ]).extra());
+                ctx.wizard.next()
         }),
         Composer.action('passenger-login', (ctx) => {
             ctx.scene.enter('test-scene')
         }),
+    ),
+
+    new Composer(
+        Composer.action('set-ride', (ctx) => {
+            ctx.replyWithMarkdown('Подтвердить поездку',
+                Markup.inlineKeyboard([
+                    Markup.callbackButton('Подтвердить', 'driver-login'),
+                ]).extra());
+            ctx.wizard.back()
+        }),
+        Composer.action('change-car-image', (ctx) => {
+            ctx.replyWithMarkdown('Изменить изображение автомобиля',
+                Markup.inlineKeyboard([
+                    Markup.callbackButton('Подтвердить', 'driver-login'),
+                ]).extra());
+            ctx.wizard.back()
+        }),
+        Composer.action('change-car-model', (ctx) => {
+            ctx.replyWithMarkdown('Изменить модель',
+                Markup.inlineKeyboard([
+                    Markup.callbackButton('Подтвердить', 'driver-login'),
+                ]).extra());
+            ctx.wizard.back()
+        }),
+    ),
+
+    new Composer(
+        (ctx) => {
+            ctx.replyWithMarkdown('done')
+        }
     )
 )
