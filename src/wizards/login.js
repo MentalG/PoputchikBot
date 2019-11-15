@@ -31,11 +31,8 @@ module.exports.loginWizard = new WizardScene('login-wizard', {},
 
     new Composer(
         Composer.action('set-ride', (ctx) => {
-            ctx.replyWithMarkdown('Подтвердить поездку',
-                Markup.inlineKeyboard([
-                    Markup.callbackButton('Подтвердить', 'driver-login'),
-                ]).extra());
-            ctx.wizard.back()
+            ctx.replyWithMarkdown('Назначить поездку')
+            ctx.wizard.next()
         }),
         Composer.action('change-car-image', (ctx) => {
             ctx.replyWithMarkdown('Изменить изображение автомобиля',
@@ -55,7 +52,7 @@ module.exports.loginWizard = new WizardScene('login-wizard', {},
 
     new Composer(
         (ctx) => {
-            ctx.replyWithMarkdown('done')
+            console.log(ctx.message.location);
         }
     )
 )
