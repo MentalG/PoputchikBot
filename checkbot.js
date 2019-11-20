@@ -18,7 +18,7 @@ module.exports = class CheckBot extends Telegraf {
         const test = new WizardScene('test-scene', {},
             new Composer(
                 (ctx) => {
-                    ctx.replyWithMarkdown('ID?', Markup.inlineKeyboard([
+                    ctx.replyWithMarkdown('ID?', Markup.keyboard([
                         Markup.callbackButton('Yes', 'login'),
                         Markup.callbackButton('No', 'registration')
                     ]).extra());
@@ -26,11 +26,11 @@ module.exports = class CheckBot extends Telegraf {
                 }
             ),
             new Composer(
-                Composer.action('login', (ctx) => {
+                Composer.hears(/Yes/ , (ctx) => {
                     ctx.wizard.state.type = 'login';
                     ctx.scene.enter('login-wizard')
                 }),
-                Composer.action('registration', (ctx) => {
+                Composer.hears(/No/, (ctx) => {
                     ctx.wizard.state.type = 'registration';
                     ctx.scene.enter('registration-wizard')
                 }),

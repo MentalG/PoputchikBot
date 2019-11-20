@@ -7,7 +7,7 @@ module.exports.registrationWizard = new WizardScene('registration-wizard', {},
         (ctx) => {
             ctx.wizard.next()
             ctx.replyWithMarkdown('Кто вы??',
-                Markup.inlineKeyboard([
+                Markup.keyboard([
                     Markup.callbackButton('Водител', 'driver-reg'),
                     Markup.callbackButton('Пассажир', 'passenger-reg')
                 ]).extra());
@@ -15,24 +15,24 @@ module.exports.registrationWizard = new WizardScene('registration-wizard', {},
     ),
         
     new Composer(
-        Composer.action('driver-reg', (ctx) => {
+        Composer.hears('Водител', (ctx) => {
             ctx.wizard.state.type = 'driver-reg';
             ctx.replyWithMarkdown('Модель машины?',
-            Markup.inlineKeyboard([
+            Markup.keyboard([
                 Markup.callbackButton('Подтвердить', 'set-car-model'),
             ]).extra());
             ctx.wizard.next()
         }),
-        Composer.action('passenger-reg', (ctx) => {
+        Composer.hears('Пассажир', (ctx) => {
             ctx.scene.enter('test-scene')
         })
     ),
 
     new Composer(
-        Composer.action('set-car-model', (ctx) => {
+        Composer.hears('Подтвердить', (ctx) => {
             ctx.wizard.state.type = 'set-car-model';
             ctx.replyWithMarkdown('Изображение машины?',
-            Markup.inlineKeyboard([
+            Markup.keyboard([
                 Markup.callbackButton('Подтвердить', 'set-car-image'),
             ]).extra());
             ctx.wizard.next()
@@ -40,7 +40,7 @@ module.exports.registrationWizard = new WizardScene('registration-wizard', {},
         ),
         
         new Composer(
-            Composer.action('set-car-image', (ctx) => {
+            Composer.hears('Подтвердить', (ctx) => {
                 ctx.scene.enter('test-scene')
         })
     )
