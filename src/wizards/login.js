@@ -1,6 +1,7 @@
 const Markup = require('telegraf/markup');
 const Composer = require('telegraf/composer');
 const WizardScene = require('telegraf/scenes/wizard');
+const fetch = require('node-fetch')
 
 module.exports.loginWizard = new WizardScene('login-wizard', {},
     new Composer(
@@ -31,7 +32,10 @@ module.exports.loginWizard = new WizardScene('login-wizard', {},
 
     new Composer(
         Composer.hears(/Назначить поездку/, (ctx) => {
-            ctx.replyWithMarkdown('Назначить поездку')
+            ctx.replyWithMarkdown('Назначить поездку',
+            Markup.keyboard([
+                Markup.callbackButton('Подтвердить поездку', 'driver-login'),
+            ]).oneTime().extra())
             ctx.wizard.next()
         }),
         Composer.hears(/Изменить изображение автомобиля/, (ctx) => {
@@ -51,8 +55,26 @@ module.exports.loginWizard = new WizardScene('login-wizard', {},
     ),
 
     new Composer(
-        (ctx) => {
-            console.log(ctx.message.location);
-        }
+        Composer.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
+            const apiUrl = `http://recipepuppy.com/api/?q=${inlineQuery.query}`
+            const response = await fetch(apiUrl)
+            const { results } = await response.json()
+            const recipes = results
+              .filter(({ thumbnail }) => thumbnail)
+              .map(({ title, href, thumbnail }) => ({
+                type: 'article',
+                id: thumbnail,
+                title: title,
+                description: title,
+                thumb_url: thumbnail,
+                input_message_content: {
+                  message_text: title
+                },
+                reply_markup: Markup.inlineKeyboard([
+                  Markup.urlButton('Go to recipe', href)
+                ])
+              }))
+            return answerInlineQuery(recipes)
+        }),
     )
 )
